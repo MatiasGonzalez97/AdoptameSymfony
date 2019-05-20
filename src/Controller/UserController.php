@@ -6,6 +6,7 @@ use App\Form\UserForm;
 use App\Services\UserServices;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
@@ -27,12 +28,14 @@ class UserController extends AbstractController
         $form = $this->createForm(UserForm::class);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
-            $services->createUser($form->getData());
-            dd($form->getData());
+          $exist = $services->createUser(json_encode($form->getData()));
+          if($exist == true){
+              return new Response('SE ha registrado con exito');
+          }
         }
-
         return $this->render('user/index.html.twig',[
             'userForm'  => $form->createView()
         ]);
     }
+
 }
